@@ -29,6 +29,7 @@ export default function Dashboard() {
   const [tipIndex, setTipIndex] = useState(0);
   const [editingId, setEditingId] = useState(null);
   const [logs, setLogs] = useState([]);
+  const latestLog = logs.length > 0 ? logs[0] : null;
   // Rotate eco tip
   useEffect(() => {
     setTipIndex(Math.floor(Math.random() * ECO_TIPS.length));
@@ -241,7 +242,23 @@ export default function Dashboard() {
             <p className="text-green-800 mt-2">Loading your emissions...</p>
           </div>
         )}
+        {latestLog && (
+  <div className="bg-white/90 rounded-2xl shadow-md p-6 mb-6">
+    <h2 className="text-lg font-bold text-green-900 mb-2">
+      Today's Carbon Footprint
+    </h2>
 
+    <p className="text-3xl font-bold text-green-700">
+      {latestLog.totalEmission} kg CO₂
+    </p>
+
+    <div className="flex gap-6 mt-3 text-sm text-gray-600">
+      <span>🚗 Transport: {latestLog.transportEmission}</span>
+      <span>🥗 Food: {latestLog.foodEmission}</span>
+      <span>⚡ Energy: {latestLog.energyEmission}</span>
+    </div>
+  </div>
+)}
         {/* Summary Cards */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-5 border-l-4 border-green-500">

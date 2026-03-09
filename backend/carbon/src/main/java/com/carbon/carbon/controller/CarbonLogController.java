@@ -40,6 +40,6 @@ public class CarbonLogController {
             return carbonLogRepository.findByUserAndDateBetween(user, from, to);
         }
 
-        return carbonLogRepository.findByUser(user);
+        return carbonLogRepository.findByUserOrderByDateDesc(user);
     }
 }

@@ -12,7 +12,7 @@ public interface CarbonLogRepository extends JpaRepository<CarbonLog, Long> {
 
     Optional<CarbonLog> findByUserAndDate(User user, LocalDate date);
 
-    List<CarbonLog> findByUser(User user);
+    List<CarbonLog> findByUserOrderByDateDesc(User user);
 
     List<CarbonLog> findByUserAndDateBetween(User user,
                                              LocalDate from,

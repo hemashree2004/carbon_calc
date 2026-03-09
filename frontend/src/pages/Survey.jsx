@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { calculateCarbon } from "../services/carbonService";
+import { apiFetch } from "../utils/api";
 
 function Survey() {
   const navigate = useNavigate();

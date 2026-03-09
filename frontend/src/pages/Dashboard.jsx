@@ -1,9 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../utils/api";
-// import React, { useEffect, useState } from "react";
-// import { Link } from "react-router-dom";
-import TrendChart from "../components/TrendChart";
 
 const CATEGORIES = ["Transport", "Energy", "Food", "Waste", "Other"];
 const CATEGORY_COLORS = {
@@ -32,14 +29,6 @@ export default function Dashboard() {
   const [tipIndex, setTipIndex] = useState(0);
   const [editingId, setEditingId] = useState(null);
   const [logs, setLogs] = useState([]);
-
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("carbonLogs")) || [];
-    setLogs(stored);
-  }, []);
-
-  const totalEmission = logs.reduce((sum, log) => sum + log.total, 0);
-
   // Rotate eco tip
   useEffect(() => {
     setTipIndex(Math.floor(Math.random() * ECO_TIPS.length));
@@ -82,7 +71,18 @@ export default function Dashboard() {
     load();
     return () => { mounted = false; };
   }, [navigate]);
+  useEffect(() => {
+  async function loadLogs() {
+    try {
+      const data = await apiFetch("/api/carbon/logs");
+      setLogs(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
+  loadLogs();
+}, []);
   // Add emission handler
   const handleAddEmission = async (e) => {
     e.preventDefault();
@@ -164,7 +164,7 @@ export default function Dashboard() {
   };
 
   // Calculate summary
-  // const totalEmission = emissions.reduce((sum, e) => sum + (e.carbonOutput || 0), 0);
+  const totalEmission = emissions.reduce((sum, e) => sum + (e.carbonOutput || 0), 0);
   const thisMonth = totalEmission;
   const goalProgress = totalEmission > 0 ? Math.min(100, Math.round((totalEmission / 200) * 100)) : 0;
   const recordCount = emissions.length;
@@ -186,8 +186,16 @@ export default function Dashboard() {
             <span className="text-2xl font-bold text-green-800">CarbonCalc</span>
             <span className="text-xl">🌱</span>
           </Link>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-green-800 font-semibold border-b-2 border-green-600 pb-0.5">Dashboard</span>
+          <div className="flex items-center gap-6">
+            <div className="flex gap-6">
+              <span className="text-sm text-green-800 font-semibold border-b-2 border-green-600 pb-0.5">Dashboard</span>
+              <Link to="/lifestyle-survey" className="text-sm text-green-800 hover:text-green-900 font-semibold transition">
+                Lifestyle Survey
+              </Link>
+              <Link to="/carbon-history" className="text-sm text-green-800 hover:text-green-900 font-semibold transition">
+                Carbon History
+              </Link>
+            </div>
             <button
               onClick={handleLogout}
               className="ml-2 bg-green-800 hover:bg-green-900 text-white text-sm px-4 py-2 rounded-lg transition font-medium"
@@ -203,9 +211,26 @@ export default function Dashboard() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-green-900">Welcome back 👋</h1>
           <p className="text-green-800/70 mt-1">Track, manage, and reduce your carbon footprint.</p>
-          <div className="mt-4 bg-white/60 backdrop-blur-sm rounded-xl px-5 py-3 inline-flex items-center gap-3 shadow-sm">
-            <span className="text-lg">💡</span>
-            <span className="text-sm text-green-900 font-medium">{ECO_TIPS[tipIndex]}</span>
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <div className="bg-white/60 backdrop-blur-sm rounded-xl px-5 py-3 inline-flex items-center gap-3 shadow-sm">
+              <span className="text-lg">💡</span>
+              <span className="text-sm text-green-900 font-medium">{ECO_TIPS[tipIndex]}</span>
+            </div>
+            {/* Quick Actions */}
+            <div className="flex gap-3">
+              <Link
+                to="/lifestyle-survey"
+                className="bg-white/80 hover:bg-white text-green-700 font-semibold px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-2"
+              >
+                + Add Log
+              </Link>
+              <Link
+                to="/carbon-history"
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition"
+              >
+                + New Goal
+              </Link>
+            </div>
           </div>
         </div>
 

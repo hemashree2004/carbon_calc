@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../utils/api";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 const CATEGORIES = ["Transport", "Energy", "Food", "Waste", "Other"];
 const CATEGORY_COLORS = {
@@ -30,6 +31,10 @@ export default function Dashboard() {
   const [editingId, setEditingId] = useState(null);
   const [logs, setLogs] = useState([]);
   const latestLog = logs.length > 0 ? logs[0] : null;
+  const chartData = logs.map(log => ({
+  date: log.date,
+  emission: log.totalEmission
+}));
   // Rotate eco tip
   useEffect(() => {
     setTipIndex(Math.floor(Math.random() * ECO_TIPS.length));
@@ -309,7 +314,20 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+        <div className="bg-white/90 rounded-2xl shadow-md p-6 mb-8">
+  <h2 className="text-lg font-bold text-green-900 mb-4">
+    Carbon Emission History
+  </h2>
 
+  <ResponsiveContainer width="100%" height={300}>
+    <LineChart data={chartData}>
+      <XAxis dataKey="date" />
+      <YAxis />
+      <Tooltip />
+      <Line type="monotone" dataKey="emission" stroke="#16a34a" strokeWidth={3} />
+    </LineChart>
+  </ResponsiveContainer>
+</div>
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
           {/* Add Emission Form */}
           <div className="lg:col-span-2 bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
